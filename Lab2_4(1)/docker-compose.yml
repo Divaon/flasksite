@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  web:
+    image: divaon/blog_app2
+    working_dir: "/app"
+    ports:
+      - '5000:5000'
+

@@ -1,0 +1,13 @@
+FROM python:3.8-slim-buster
+
+WORKDIR /app
+
+COPY . .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+ENV GOOGLE_APPLICATION_CREDENTIALS "/app/gcloud.json"
+ENV ADMIN_USERNAME "'KING'"
+ENV ADMIN_PASSWORD "'KING'"
+
+CMD [ "python", "./docker.py"]
+EXPOSE 5000

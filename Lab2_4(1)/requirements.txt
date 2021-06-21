@@ -1,0 +1,4 @@
+Flask
+google-cloud-datastore
+just-config
+pytest
