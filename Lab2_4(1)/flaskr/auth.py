@@ -1,4 +1,5 @@
 import functools
+import asyncio
 
 from flask import (Blueprint, flash, g, redirect, render_template, request, session, url_for)
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -6,6 +7,7 @@ from flaskr.repositories import UserRepository, PostRepository
 from flaskr.application import *
 from just_config.configuration import Configuration
 import logging
+
 cfg = Configuration('flask_app')
 
 bp=Blueprint('auth', __name__, url_prefix='/auth')
@@ -91,14 +93,20 @@ def adminrequired(view):
 def admin():
     return render_template('blog/admin.html')
 
-
-@bp.route('/users', methods=('GET','POST'))
-def users():
+def user_logic(message=''):
     users = user_repository.get_users()
-    return render_template('auth/records.html', records = users, url='delete_user')
+    return render_template('auth/records.html', records = users, url='delete_user', message=message)
 
 
-@bp.route('/posts', methods=('GET','POST'))
+@bp.route('/users', methods=['GET'])
+def users():
+    message = ''
+    if 'msg' in g.__dict__:
+        message = g.msg
+        g.msg = ''
+    return user_logic(message)
+
+@bp.route('/posts',  methods=['GET'])
 def posts():
     posts = post_repository.get_posts()
     return render_template('auth/records.html', records = posts, url='delete_post')
@@ -108,18 +116,25 @@ def posts():
 @adminrequired
 def delete_post(id):
     delete_post_logic(id)
-    return posts()
+    return redirect(url_for('auth.posts'))
 
 
 def delete_post_logic(id):
     post_repository.delete_post(id)
 
-
-@bp.route('/delete_user/<int:id>/', methods=['POST'])
-@adminrequired
-def delete_user(id):
+async def delete_user_logic(id):
     posts=post_repository.get_posts(id)
     for post in posts:
         delete_post_logic(post['id'])
     user_repository.delete_user(id)
-    return users()
+
+async def delete_user_async(id):
+    task = asyncio.create_task(delete_user_logic(id))
+    await task
+
+@bp.route('/delete_user/<int:id>/', methods=['POST'])
+@adminrequired
+def delete_user(id):
+    asyncio.run(delete_user_async(id))
+    g.msg = 'Пользователь удаляется в асинхронном режиме, попробуйте обновить страницу через 5 минут'
+    return redirect(url_for('auth.users'))

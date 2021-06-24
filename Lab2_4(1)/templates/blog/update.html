@@ -10,7 +10,8 @@
     <input name="title" id="title"
       value="{{ request.form['title'] or post['title'] }}" required>
     <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
+    <textarea name="body" id="body" onKeyPress="check_length(this.form);" onKeyDown="check_length(this.form);">{{ request.form['body'] or post['body'] }}</textarea>
+    <input size="1" value="200 Characters Left" name="text_num" readonly>
     <input type="submit" value="Save">
   </form>
   <hr>

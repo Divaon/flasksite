@@ -7,20 +7,16 @@ from datetime import datetime
 
 client = datastore.Client()
 
+
 class Repository:
 
     def __init__(self):
         self._database = client
 
-    def _get_key(self, kind=None):#data_entity: DataEntity, parent: DataEntity = None):
-        # if parent:
-        #     parent = self.__client.key(parent.kind, parent.id)
-        # if data_entity.id:
-        #     return self.__client.key(data_entity.kind, data_entity.id, parent=parent)
-        # else:
+    def _get_key(self, kind=None):
         if not kind:
             kind = self._kind
-        return self._database.key(kind)#,) parent=parent)
+        return self._database.key(kind)
 
     def _get_entity(self, kind=None):
         key = self._get_key()
@@ -75,7 +71,6 @@ class UserRepository(Repository):
         user = self._get_entity()
         user['username'] = username
         user['password'] = generate_password_hash(password)
-        
         self._database.put(user)
 
     def get_users(self):
@@ -150,7 +145,7 @@ class PostRepository(Repository):
     
     def _prepare_posts(self, posts):
         authors = {}
-
+        #Join
         for post in posts:
             if post['author_id'] in authors:
                 username = authors[post['author_id']]
