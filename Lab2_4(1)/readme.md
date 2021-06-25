@@ -15,3 +15,6 @@ flask run
 В облаке:
 https://brilliant-forge-317117.ew.r.appspot.com
 
+Тесты:
+export PYTHONPATH="/home/divaon/Рабочий стол/Lab2_4(1)"
+pytest

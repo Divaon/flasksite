@@ -1,3 +1,4 @@
+from flaskr.application import check_title
 from flask import (Blueprint, flash, g, redirect, render_template, url_for, request)
 from werkzeug.exceptions import abort
 from flaskr.auth import loginrequired
@@ -31,7 +32,6 @@ def create():
         title=request.form['title']
         body=request.form['body']
         error=None
-
         if not title:
             error='Title is required'
         if error is not None:
@@ -51,9 +51,7 @@ def update(id):
     if request.method=='POST':
         title=request.form['title']
         body=request.form['body']
-        error=None
-        if not title:
-            error='Title is required. '
+        error=check_title(title)
         if error is not None:
             flash(error)
         else:
